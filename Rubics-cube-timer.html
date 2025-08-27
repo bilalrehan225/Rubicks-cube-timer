@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="description"
+    content="A free online Rubik's Cube timer with random scrambles, high scores, and tracking. Perfect for speedcubers to practice and improve.">
+  <title>Cube Timer</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0px;
+      box-sizing: border-box;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      max-height: 100vh;
+    }
+
+    #output {
+      font-size: 150px;
+      text-align: center;
+    }
+
+    .cont {
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+      flex-wrap: wrap;
+      min-height: 80vh;
+      align-items: center;
+    }
+
+    .bar {
+      display: flex;
+      justify-content: space-between;
+      /* space between left & right */
+      align-items: center;
+      background-color: rgb(80, 80, 80);
+      width: 100vw;
+      height: 80px;
+      padding: 1rem 1.5rem;
+    }
+
+    .bar-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .bar-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .checkscore {
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+
+    .img1 {
+      height: 80px;
+      width: 80px;
+      cursor: pointer;
+    }
+
+    .content {
+      color: white;
+      font-weight: bold;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .scramble {
+      font-size: 19px;
+      font-weight: bold;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    a {
+      text-decoration: none;
+    }
+
+    .score {
+      background-color: grey;
+      height: 250px;
+      width: 100px;
+      align-self: flex-end;
+    }
+
+    .highscore {
+      margin-bottom: 5vh;
+      background-color: #f5f5f5;
+      padding: 0.3rem;
+      border-radius: 5px;
+    }
+
+    .reseths {
+      background-color: red;
+      color: white;
+      font-size: 17px;
+      padding: 10px;
+      border-radius: 10px;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+    }
+
+    .reseths:hover {
+      background-color: rgb(211, 0, 0);
+      transition: all 0.3 ease-in-out;
+    }
+
+    .h1 {
+      text-align: center;
+      color: white;
+      padding: 10px;
+      font-size: 18px;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <div class="bar">
+    <div class="bar-left">
+      <a href="Rubics-cube-timer.html">
+        <div class="content">CUBE TIMER</div>
+      </a>
+      <a href="Rubics-cube-timer.html"><img src="cube-pic.png" class="img1"></a>
+    </div>
+
+    <div class="bar-right">
+     <a href="Rubics-cube-timer-score.html"><p class="checkscore">CHECK YOUR SCORE</p></a>
+    </div>
+  </div>
+
+
+  </div>
+  <div class="cont">
+    <div class="highscore" id="highscores">YOUT HIGHEST SCORE IS "UNDEFINED"</div>
+    <div class="scramble" id="scramble"></div>
+    <p id="output">0</p>
+    <br><br>
+    <button class="reseths" id="reseths">RESET HIGHSCORE</button>
+  </div>
+  </div>
+
+
+  <script>
+    let scramble = document.getElementById("scramble");
+    let output = document.getElementById("output");
+    let running = false;
+    let timer = 0;
+    let timerinterval = null;
+    let random;
+    let solvetime;
+    let highscore = Number(localStorage.getItem("highestscore"));
+    let highscores = document.getElementById("highscores");
+
+    // show highscore if exists
+    if (highscore) {
+      highscores.textContent = "YOUR HIGHEST SCORE IS: " + highscore;
+      document.getElementById("reseths").onclick = function () {
+        localStorage.clear("highestscore");
+        highscores.textContent = "YOUR HIGHEST SCORE IS UNDEFINED";
+      }
+    }
+
+    document.addEventListener("keydown", function (start) {
+      if (start.code === "Space") {
+        start.preventDefault();
+
+        if (!running) {
+          // Start timer
+          running = true;
+          timer = 0;
+          timerinterval = setInterval(() => {
+            timer += 0.01;
+            output.textContent = timer.toFixed(2);
+          }, 10);
+        } else {
+          // Stop timer
+          running = false;
+          clearInterval(timerinterval);
+
+          solvetime = Number(timer.toFixed(2));
+          let score = localStorage.setItem("score", solvetime);
+
+          if (!highscore || solvetime < highscore) {
+            localStorage.setItem("highestscore", solvetime);
+            highscore = solvetime;
+            highscores.textContent = "YOUR HIGHEST SCORE IS: " + highscore;
+            document.getElementById("reseths").onclick = function () {
+              localStorage.clear("highestscore");
+              highscores.textContent = "YOUR HIGHEST SCORE IS UNDEFINED";
+            }
+          }
+        }
+      }
+    });
+
+
+
+    random = Math.floor(Math.random() * 12);
+    console.log(random);
+    if (random == 0) {
+      scramble.textContent = "R2 U' B2 F D' F' L' U R2 B U' L2 D F2 U2 R' F' R D2 F' U L2 D2";
+    }
+    if (random == 1) {
+      scramble.textContent = "U2 L B2 U' R' D' L' F2 R' U' F2 D2 B U2 R D L2 U' F2 B2 D' R'";
+    }
+    if (random == 2) {
+      scramble.textContent = "B2 U L' F' D2 B L2 F2 D L2 R2 U R' F D B' R' U2 F2 R D' U'";
+    }
+    if (random == 3) {
+      scramble.textContent = "D L2 F2 R2 D' B' R D2 B2 R2 U2 F R2 B U' L' F' U B' D L2 U";
+    }
+    if (random == 4) {
+      scramble.textContent = "R' F2 D2 B' U R2 U2 L2 D' R B2 D2 L' U' F2 R2 U' L B U2 F' R";
+    }
+    if (random == 5) {
+      scramble.textContent = "F' U L' B2 R' D' R2 U2 B2 U2 L F' U' R U B' R2 L2 U2 D B L'";
+    }
+    if (random == 6) {
+      scramble.textContent = "L2 U' R' F2 U2 L F' R2 B' D2 F2 L' B D L' B' F' U2 R2 D U'";
+    }
+    if (random == 7) {
+      scramble.textContent = "U2 B' R2 D2 F2 R2 U' L B2 F' U D2 R B' U' F' L2 D L' F' U2 B2";
+    }
+    if (random == 8) {
+      scramble.textContent = "B2 L2 D' B2 R' U2 F D' L2 F' R2 U2 D R2 B2 F2 L U F R U' B'";
+    }
+    if (random == 9) {
+      scramble.textContent = "R2 D2 U' L2 D' F U2 B2 L2 D F' R D2 B' R2 U2 F D' U2 R' B' U";
+    }
+    if (random == 10) {
+      scramble.textContent = "D' R2 F' U2 L' B R2 U' F2 D2 L2 F U' B' R' D B' U L F2 U2";
+    }
+    if (random == 11) {
+      scramble.textContent = "U F2 R B2 U L' D' R2 F U2 D' L' B R2 U B2 F2 U2 R D' L F'";
+    }
+    if (random == 12) {
+      scramble.textContent = "F' L2 B2 U2 R U' D B' F2 R2 U L2 R' D2 F D2 B U' L D' R' B2";
+    }
+    if (random == 13) {
+      scramble.textContent = "B2 R2 U F2 L2 U' D2 B' R' U2 D' L' B R2 U F2 L D' R F U'";
+    }
+    if (random == 14) {
+      scramble.textContent = "U2 R2 B2 D' F' U R L2 B2 U' F R' U2 D2 F2 R D L' B' F U'";
+    }
+    if (random == 15) {
+      scramble.textContent = "B' D2 R2 U L2 F2 U' B2 R2 F' D' R' B D2 F2 L U F' L2 U2 R D'";
+    }
+    if (random == 16) {
+      scramble.textContent = "U2 R' D B2 L2 F' U' R2 F2 L D2 B R' U F2 U2 L' D F R2 U L'";
+    }
+    if (random == 17) {
+      scramble.textContent = "F2 U L' B2 U2 F' R D2 B L2 D' F2 U R' D' B U L' F2 R U2 D2";
+    }
+    if (random == 18) {
+      scramble.textContent = "L' U2 D F2 R' B' U2 L2 D' B2 F U' R B2 U L D2 R' B F' U2 L2";
+    }
+    if (random == 19) {
+      scramble.textContent = "R2 B' U2 F D2 R' U B2 L' U2 D2 F' R D L2 B2 U R2 F' U' L";
+    }
+    if (random == 20) {
+      scramble.textContent = "U' F2 L2 B' D R2 U2 L' B2 F D2 U R' B U2 L2 F' D' R2 U L B'";
+    }
+
+    if (highscore) {
+      if (solvetime < highscore) {
+        localStorage.clear("highestscore");
+        localStorage.setItem("highestscore", solvetime);
+        highscores.textContent = "YOUR HIGHEST SCORE IS: " + highscore;
+      }
+    }
+
+
+  </script>
+</body>
+
+</html>
